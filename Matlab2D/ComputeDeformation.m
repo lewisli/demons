@@ -1,4 +1,5 @@
-function [ Tx Ty ] = ComputeDeformation( I1, I2 )
+function [ Tx Ty ] = ComputeDeformation( I1, I2, MaxIter, NumPyramids, ...
+    filterSize, Tolerance, alpha,plotFreq)
 % ComputeDeformation: Compute deformation between images using Thirion's
 % Demon Algorithm
 %   Implementation of Thirion's Demon Algorithm in 2D. Computes the
@@ -11,6 +12,11 @@ function [ Tx Ty ] = ComputeDeformation( I1, I2 )
 %   MaxIter: Maximum of iterations
 %   NumPyramids: Number of pyramids for downsizing
 %   filterSize: Size of Gaussian filter used for smoothing deformation grid
+%   Tolerance: MSE convergence tolerance
+%   alpha: Constant for Extended Demon Force (Cachier 1999). If alpha is 0,
+%   run regular Demon force.
+%   plotFreq: Number of iterations per plot update. Set to 0 to turn off
+%   plotting.
 %
 % By Lewis Li (lewisli@stanford.edu)
 % Jan 26th 2015
@@ -18,25 +24,14 @@ function [ Tx Ty ] = ComputeDeformation( I1, I2 )
 close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PARAMETERS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Number of pyramid scales
-NumPyramids = 4;
-
-% Max iterations per pyramid
-MaxIter = 800;
 
 % How much MSE can increase between iterations before terminating
-MSETolerance = 1.0000005;
-MSEConvergenceCriterion = 0.001;
+MSETolerance = 1 + Tolerance;
+MSEConvergenceCriterion = Tolerance;
 
 % Alpha (noise) constant for Extended Demon Force
-alphaInit=0.45;
+alphaInit=alpha;
 
-% Filter Size
-filterSize = [50 50];
-
-% Plot frequency: Number of iterations for each plotting update. Set to 0
-% to turn off plotting.
-plotFreq = 5;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Plotting tools
@@ -90,17 +85,19 @@ for pyNum = 1:NumPyramids
         % Difference image between moving and static image
         Idiff=M-S;
         
-        % Default demon force, (Thirion 1998)
-        Ux = -(Idiff.*Sx)./((Sx.^2+Sy.^2)+Idiff.^2);
-        Uy = -(Idiff.*Sy)./((Sx.^2+Sy.^2)+Idiff.^2);
-        
-        % Extended demon force. Faster convergence but more unstable.
-        % (Cachier 1999, He Wang 2005)
-        %         [My,Mx] = gradient(M);
-        %         Ux = -Idiff.*  ((Sx./((Sx.^2+Sy.^2)+alpha^2*Idiff.^2))+ ...
-        %             (Mx./((Mx.^2+My.^2)+alpha^2*Idiff.^2)));
-        %         Uy = -Idiff.*  ((Sy./((Sx.^2+Sy.^2)+alpha^2*Idiff.^2))+ ...
-        %             (My./((Mx.^2+My.^2)+alpha^2*Idiff.^2)));
+        if (alpha == 0)
+            % Default demon force, (Thirion 1998)
+            Ux = -(Idiff.*Sx)./((Sx.^2+Sy.^2)+Idiff.^2);
+            Uy = -(Idiff.*Sy)./((Sx.^2+Sy.^2)+Idiff.^2);
+        else
+            % Extended demon force. Faster convergence but more unstable.
+            % (Cachier 1999, He Wang 2005)
+            [My,Mx] = gradient(M);
+            Ux = -Idiff.*  ((Sx./((Sx.^2+Sy.^2)+alpha^2*Idiff.^2))+ ...
+                (Mx./((Mx.^2+My.^2)+alpha^2*Idiff.^2)));
+            Uy = -Idiff.*  ((Sy./((Sx.^2+Sy.^2)+alpha^2*Idiff.^2))+ ...
+                (My./((Mx.^2+My.^2)+alpha^2*Idiff.^2)));
+        end
         
         % When divided by zero
         Ux(isnan(Ux))=0;
