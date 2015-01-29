@@ -124,7 +124,7 @@ for pyNum = 1:NumPyramids
             break;
         end
         
-        % Break if MSE isn't really decrease much
+        % Break if MSE isn't really decreasing much
         if (abs(prevMSE-MSE)/MSE < MSEConvergenceCriterion)
             display(['Pyramid Level: ' num2str(pyNum) ' Converged after ' ...
                 num2str(itt) ' iterations.']);
