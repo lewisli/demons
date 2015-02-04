@@ -34,3 +34,26 @@ plotFreq = 5;
 [Tx Ty] = ComputeDeformation(I1,I2,MaxIter,NumPyramids,filterSize,...
     Tolerance, alpha, plotFreq);
 
+%% Translated Image Test
+clear all;
+load('data/TranslatedImage.mat');
+I1 = mat2gray(I1);
+
+
+I3 = mat2gray(I2);
+I3(isnan(I2)) = I1(isnan(I2));
+% Pre-process
+
+MaxIter = 800;
+NumPyramids = 4;
+filterSize = [50 50];
+filterSigma = 30;
+Tolerance = 0.00001;
+alpha = 0;
+plotFreq = 5;
+
+imagesc(I3);
+
+[Tx Ty] = ComputeDeformation(I1,I3,MaxIter,NumPyramids,filterSize,...
+    filterSigma,Tolerance, alpha, plotFreq);
+

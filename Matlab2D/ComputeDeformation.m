@@ -1,5 +1,5 @@
 function [ Tx Ty ] = ComputeDeformation( I1, I2, MaxIter, NumPyramids, ...
-    filterSize, Tolerance, alpha,plotFreq)
+    filterSize, filterSigma, Tolerance, alpha,plotFreq)
 % ComputeDeformation: Compute deformation between images using Thirion's
 % Demon Algorithm
 %   Implementation of Thirion's Demon Algorithm in 2D. Computes the
@@ -52,7 +52,7 @@ for pyNum = 1:NumPyramids
     scaleFactor = pyNum*pyStepSize;
     
     % Increase size of smoothing filter
-    Hsmooth=fspecial('gaussian',filterSize*pyNum,20*scaleFactor);
+    Hsmooth=fspecial('gaussian',filterSize*pyNum,filterSigma*scaleFactor);
     
     % Only needed if using extended demon force
     alpha=alphaInit/pyNum;
