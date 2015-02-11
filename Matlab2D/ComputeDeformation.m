@@ -117,19 +117,21 @@ for pyNum = 1:NumPyramids
         MSE = sum(D(:))/numel(S);
         
         
-%         % Break if MSE is increasing
-%         if (MSE > prevMSE*MSETolerance)
-%             display(['Pyramid Level: ' num2str(pyNum) ' Converged after ' ...
-%                 num2str(itt) ' iterations.']);
-%             break;
-%         end
-%         
-%         % Break if MSE isn't really decreasing much
-%         if (abs(prevMSE-MSE)/MSE < MSEConvergenceCriterion)
-%             display(['Pyramid Level: ' num2str(pyNum) ' Converged after ' ...
-%                 num2str(itt) ' iterations.']);
-%             break;
-%         end
+        if (MSETolerance > 0)
+            % Break if MSE is increasing
+            if (MSE > prevMSE*MSETolerance)
+                display(['Pyramid Level: ' num2str(pyNum) ' Converged after ' ...
+                    num2str(itt) ' iterations.']);
+                break;
+            end
+            
+            % Break if MSE isn't really decreasing much
+            if (abs(prevMSE-MSE)/MSE < MSEConvergenceCriterion)
+                display(['Pyramid Level: ' num2str(pyNum) ' Converged after ' ...
+                    num2str(itt) ' iterations.']);
+                break;
+            end
+        end
         
         % Update MSE
         prevMSE = MSE;
@@ -156,11 +158,8 @@ for pyNum = 1:NumPyramids
                 colorbar; colormap jet; title(['Diff MSE: = ' ...
                     num2str(MSE)]);
                 pause(0.1);
-            end
-            
+            end    
         end
-        
-        
     end
     
     % Propogate transformation to next pyramid
