@@ -52,7 +52,7 @@ for pyNum = 1:NumPyramids
     scaleFactor = pyNum*pyStepSize;
     
     % Increase size of smoothing filter
-    Hsmooth=fspecial('gaussian',filterSize*pyNum,filterSigma*scaleFactor);
+    Hsmooth=fspecial('gaussian',filterSize*scaleFactor,filterSigma*scaleFactor);
     
     % Only needed if using extended demon force
     alpha=alphaInit/pyNum;
@@ -117,19 +117,19 @@ for pyNum = 1:NumPyramids
         MSE = sum(D(:))/numel(S);
         
         
-        % Break if MSE is increasing
-        if (MSE > prevMSE*MSETolerance)
-            display(['Pyramid Level: ' num2str(pyNum) ' Converged after ' ...
-                num2str(itt) ' iterations.']);
-            break;
-        end
-        
-        % Break if MSE isn't really decreasing much
-        if (abs(prevMSE-MSE)/MSE < MSEConvergenceCriterion)
-            display(['Pyramid Level: ' num2str(pyNum) ' Converged after ' ...
-                num2str(itt) ' iterations.']);
-            break;
-        end
+%         % Break if MSE is increasing
+%         if (MSE > prevMSE*MSETolerance)
+%             display(['Pyramid Level: ' num2str(pyNum) ' Converged after ' ...
+%                 num2str(itt) ' iterations.']);
+%             break;
+%         end
+%         
+%         % Break if MSE isn't really decreasing much
+%         if (abs(prevMSE-MSE)/MSE < MSEConvergenceCriterion)
+%             display(['Pyramid Level: ' num2str(pyNum) ' Converged after ' ...
+%                 num2str(itt) ' iterations.']);
+%             break;
+%         end
         
         % Update MSE
         prevMSE = MSE;
